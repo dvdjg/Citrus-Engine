@@ -201,7 +201,7 @@ package citrus.utils.objectmakers {
 			}
 
 			var objectClass:Class;
-			var object:CitrusObject;
+			var object:Object; // Any class of object
 			var mtx:Matrix = new Matrix();
 			var pt:Point = new Point();
 			var newLoc:Point;
@@ -261,9 +261,14 @@ package citrus.utils.objectmakers {
 				}
 			}
 
-			if (addToCurrentState)
-				for each (object in objects) ce.state.add(object);
-
+			if (addToCurrentState) {
+				for each (object in objects) {
+					var citrusObject:CitrusObject = object as CitrusObject;
+					if (citrusObject) {
+						ce.state.add(citrusObject);
+					}
+				}
+			}
 			return objects;
         }
 
