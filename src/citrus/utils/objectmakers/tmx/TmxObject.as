@@ -53,19 +53,21 @@ package citrus.utils.objectmakers.tmx {
 			//points/polygon/polyline
 			var nodes:XMLList = source.children();
 			
+			points = [];
 			for each(node in nodes) {
-				
+				var strPoints:String = node.@points;
 				shapeType = node.@name;
-				points = [];
-				var pointsArray:Array = String(node.@points).split(" ");
-				var len:uint = pointsArray.length;
-				
-				for (var i:uint = 0; i < len; ++i){
-					var pstr:Array = pointsArray[i].split(",");
-					var point:Object = {x:int(pstr[0]), y:int(pstr[1])};
-					points.push(point);
+				if (strPoints != null && strPoints != "") {
+					var pointsArray:Array = strPoints.split(" ");
+					var len:uint = pointsArray.length;
+					
+					for (var i:uint = 0; i < len; ++i){
+						var pstr:Array = pointsArray[i].split(",");
+						var point:Object = {x:int(pstr[0]), y:int(pstr[1])};
+						points.push(point);
+					}
 				}
-				break;
+				//break;
 			}
 		}
 	}
