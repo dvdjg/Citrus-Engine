@@ -1,7 +1,10 @@
 package citrus.utils.objectmakers {
 
-	import flash.geom.Point;
+	import flash.display.MovieClip;
 	import flash.geom.Matrix;
+	import flash.geom.Point;
+	import flash.utils.getDefinitionByName;
+	
 	import citrus.core.CitrusEngine;
 	import citrus.core.CitrusObject;
 	import citrus.objects.CitrusSprite;
@@ -10,15 +13,12 @@ package citrus.utils.objectmakers {
 	import citrus.utils.objectmakers.tmx.TmxObjectGroup;
 	import citrus.utils.objectmakers.tmx.TmxPropertySet;
 	import citrus.utils.objectmakers.tmx.TmxTileSet;
-
+	
 	import starling.display.Image;
 	import starling.display.QuadBatch;
 	import starling.textures.Texture;
 	import starling.textures.TextureAtlas;
 	import starling.utils.Color;
-
-	import flash.display.MovieClip;
-	import flash.utils.getDefinitionByName;
 
 	/**
 	 * The ObjectMaker is a factory utility class for quickly and easily batch-creating a bunch of CitrusObjects.
@@ -133,8 +133,9 @@ package citrus.utils.objectmakers {
 		 * It also supports properties.</p>
 		 * @param levelXML the TMX provided by the Tiled Map Editor software, convert it into an xml before.
 		 * @param atlas an atlas or a reference to an AssetManager which represent the different tiles, you must name each tile with the corresponding texture name.
+		 * @param defaultObjectClass The class to be used when not found the one supplied in the XML.
 		 */
-		public static function FromTiledMap(levelXML:XML, atlas:*, addToCurrentState:Boolean = true):Array {
+		public static function FromTiledMap(levelXML:XML, atlas:*, addToCurrentState:Boolean = true, defaultObjectClass:Class = null):Array {
 
 			var ce:CitrusEngine = CitrusEngine.getInstance();
 			var params:Object;
@@ -212,10 +213,20 @@ package citrus.utils.objectmakers {
 
 				for each (objectTmx in group.objects) {
 
-					objectClass = getDefinitionByName(objectTmx.type) as Class;
-
 					params = {};
 
+					try {
+						objectClass = getDefinitionByName(objectTmx.type) as Class;
+					} catch (error:ReferenceError) {
+						if (defaultObjectClass) {
+							// Pass the type name as the argument "type". Can be overwritten by a real param named "type".
+							params["type"] = objectTmx.type;
+							objectClass = defaultObjectClass;
+						} else {
+							continue;
+						}
+					}
+						
 					for (param in objectTmx.custom)
 						params[param] = objectTmx.custom[param];
 
