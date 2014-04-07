@@ -323,7 +323,8 @@ package citrus.utils.objectmakers {
 
             for each (var layerXML:XML in levelXML.Layers.Layer) // Loop through all layers
             {
-                var textureItems:Vector.<Image> = new Vector.<Image>;
+                //var textureItems:Vector.<Image> = new Vector.<Image>;
+				var textureItems:Array = []; // Problems wit FlashBuilder parser
                 var layer:String = layerXML.@Name.toString();
 
                 for each (var itemXML:XML in layerXML.Items.Item) // Loop through all items on a layer
