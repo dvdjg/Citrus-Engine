@@ -172,10 +172,14 @@ package citrus.utils.objectmakers {
 							if (mapTiles[i][j] != 0) {
 								
 								var tileID:uint = mapTiles[i][j];
-								
 								for each (tileSet in tmx.tileSets) {
 									tileProps = tileSet.getProperties(tileID - tileSet.firstGID);
 									if (tileProps != null) break;
+								}
+								if (tileProps == null) {
+									// Nothing to draw here
+									trace("[AssetManager] Not found tile " + i + "x" + j + ": " + tileID + " -> " + (tileID - tileSet.firstGID));
+									continue;
 								}
 								name = tileProps["name"];
 								
