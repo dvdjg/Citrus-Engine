@@ -163,35 +163,34 @@ package citrus.utils.objectmakers {
 
 				var qb:QuadBatch = new QuadBatch();
 
-					for (var i:uint = 0; i < mapTilesX; ++i) {
+				for (var i:uint = 0; i < mapTilesX; ++i) {
 
-						mapTilesY = mapTiles[i].length;
+					mapTilesY = mapTiles[i].length;
 
-						for (var j:uint = 0; j < mapTilesY; ++j) {
+					for (var j:uint = 0; j < mapTilesY; ++j) {
 
-							if (mapTiles[i][j] != 0) {
-								
-								var tileID:uint = mapTiles[i][j];
-								for each (tileSet in tmx.tileSets) {
-									tileProps = tileSet.getProperties(tileID - tileSet.firstGID);
-									if (tileProps != null) break;
-								}
-								if (tileProps == null) {
-									// Nothing to draw here
-									trace("[AssetManager] Not found tile " + i + "x" + j + ": " + tileID + " -> " + (tileID - tileSet.firstGID));
-									continue;
-								}
-								name = tileProps["name"];
-								
-								texture = atlas.getTexture(name);
-
-								var image:Image = new Image(texture);
-								image.x = j * tmx.tileWidth;
-								image.y = i * tmx.tileHeight;
-
-								qb.addImage(image);
+						if (mapTiles[i][j] != 0) {
+							
+							var tileID:uint = mapTiles[i][j];
+							for each (tileSet in tmx.tileSets) {
+								tileProps = tileSet.getProperties(tileID - tileSet.firstGID);
+								if (tileProps != null) break;
 							}
+							if (tileProps == null) {
+								// Nothing to draw here
+								trace("[AssetManager] Not found tile " + i + "x" + j + ": " + tileID + " -> " + (tileID - tileSet.firstGID));
+								continue;
+							}
+							name = tileProps["name"];
+							texture = atlas.getTexture(name);
+
+							var image:Image = new Image(texture);
+							image.x = j * tmx.tileWidth;
+							image.y = i * tmx.tileHeight;
+
+							qb.addImage(image);
 						}
+					}
 				}
 
 				params = {};
