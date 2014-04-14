@@ -3,6 +3,7 @@ package citrus.utils.objectmakers {
 	import flash.display.MovieClip;
 	import flash.geom.Matrix;
 	import flash.geom.Point;
+	import flash.utils.Dictionary;
 	import flash.utils.getDefinitionByName;
 	
 	import citrus.core.CitrusEngine;
@@ -135,7 +136,9 @@ package citrus.utils.objectmakers {
 		 * @param atlas an atlas or a reference to an AssetManager which represent the different tiles, you must name each tile with the corresponding texture name.
 		 * @param defaultObjectClass The class to be used when not found the one supplied in the XML.
 		 */
-		public static function FromTiledMap(levelXML:XML, atlas:*, addToCurrentState:Boolean = true, defaultObjectClass:Class = null):Array {
+		public static function FromTiledMap(levelXML:XML, atlas:*, 
+											addToCurrentState:Boolean = true, 
+											defaultObjectClass:Class = null):Array {
 
 			var ce:CitrusEngine = CitrusEngine.getInstance();
 			var params:Object;
@@ -153,6 +156,10 @@ package citrus.utils.objectmakers {
 			var tileProps:TmxPropertySet;
 			var name:String;
 			var texture:Texture;
+			var texQuad:Dictionary = new Dictionary;
+			var qb:QuadBatch;
+			
+			params = {};
 			
 			for (var layer_num:uint = 0; layer_num < tmx.layers_ordered.length; ++layer_num) {
 				
@@ -160,8 +167,6 @@ package citrus.utils.objectmakers {
 				mapTiles = tmx.getLayer(layer).tileGIDs;
 
 				mapTilesX = mapTiles.length;
-
-				var qb:QuadBatch = new QuadBatch();
 
 				for (var i:uint = 0; i < mapTilesX; ++i) {
 
@@ -183,6 +188,11 @@ package citrus.utils.objectmakers {
 							}
 							name = tileProps["name"];
 							texture = atlas.getTexture(name);
+							qb = texQuad[texture.root];
+							if (qb == null) {
+								qb = new QuadBatch();
+								texQuad[texture.root] = qb;
+							}
 
 							var image:Image = new Image(texture);
 							image.x = j * tmx.tileWidth;
@@ -193,17 +203,18 @@ package citrus.utils.objectmakers {
 					}
 				}
 
-				params = {};
-
-				params.view = qb;
-
 				for (var param:String in tmx.getLayer(layer).properties)
 					params[param] = tmx.getLayer(layer).properties[param];
 
+			}
+
+			for (var tex:Texture in texQuad) {
+				qb = texQuad[tex];
+				params.view = qb;
 				citrusSprite = new CitrusSprite(layer, params);
 				objects.push(citrusSprite);
 			}
-
+			
 			var objectClass:Class;
 			var object:Object; // Any class of object
 			var mtx:Matrix = new Matrix();
