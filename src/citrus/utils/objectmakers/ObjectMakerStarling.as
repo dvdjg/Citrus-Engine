@@ -205,14 +205,23 @@ package citrus.utils.objectmakers {
 
 				for (var param:String in tmx.getLayer(layer).properties)
 					params[param] = tmx.getLayer(layer).properties[param];
+				
+				// Allow the use of more than a texture per layer
+				var nQuads:int = 0;
+				var text:Texture;
+				for (text in texQuad)
+					++nQuads;
+				if(nQuads > 1 || layer_num == tmx.layers_ordered.length-1) {
+					for (text in texQuad) {
+						qb = texQuad[text];
+						params.view = qb;
+						citrusSprite = new CitrusSprite(layer, params);
+						objects.push(citrusSprite);
+					}
+					params = {};
+					texQuad = new Dictionary;
+				}
 
-			}
-
-			for (var tex:Texture in texQuad) {
-				qb = texQuad[tex];
-				params.view = qb;
-				citrusSprite = new CitrusSprite(layer, params);
-				objects.push(citrusSprite);
 			}
 			
 			var objectClass:Class;
