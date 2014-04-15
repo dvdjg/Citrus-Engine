@@ -15,6 +15,8 @@ package citrus.utils.objectmakers {
 	import citrus.utils.objectmakers.tmx.TmxPropertySet;
 	import citrus.utils.objectmakers.tmx.TmxTileSet;
 	
+	import nape.geom.Vec2;
+	
 	import starling.display.Image;
 	import starling.display.QuadBatch;
 	import starling.textures.Texture;
@@ -138,7 +140,8 @@ package citrus.utils.objectmakers {
 		 */
 		public static function FromTiledMap(levelXML:XML, atlas:*, 
 											addToCurrentState:Boolean = true, 
-											defaultObjectClass:Class = null):Array {
+											defaultObjectClass:Class = null,
+											offset:Vec2 = null):Array {
 
 			var ce:CitrusEngine = CitrusEngine.getInstance();
 			var params:Object;
@@ -160,6 +163,10 @@ package citrus.utils.objectmakers {
 			var qb:QuadBatch;
 			
 			params = {};
+			
+			if (!offset) {
+				offset = Vec2.weak();
+			}
 			
 			for (var layer_num:uint = 0; layer_num < tmx.layers_ordered.length; ++layer_num) {
 				
@@ -195,8 +202,8 @@ package citrus.utils.objectmakers {
 							}
 
 							var image:Image = new Image(texture);
-							image.x = j * tmx.tileWidth;
-							image.y = i * tmx.tileHeight;
+							image.x = j * tmx.tileWidth + offset.x;
+							image.y = i * tmx.tileHeight + offset.y;
 
 							qb.addImage(image);
 						}
@@ -253,8 +260,8 @@ package citrus.utils.objectmakers {
 					for (param in objectTmx.custom)
 						params[param] = objectTmx.custom[param];
 
-					params.x = objectTmx.x + objectTmx.width * 0.5;
-					params.y = objectTmx.y + objectTmx.height * 0.5;
+					params.x = objectTmx.x + objectTmx.width * 0.5 + offset.x;
+					params.y = objectTmx.y + objectTmx.height * 0.5 + offset.y;
 					params.width = objectTmx.width;
 					params.height = objectTmx.height;
 					params.rotation = objectTmx.rotation;
@@ -264,8 +271,8 @@ package citrus.utils.objectmakers {
 						mtx.rotate(objectTmx.rotation * Math.PI / 180); 
 						pt.setTo(objectTmx.width / 2, objectTmx.height / 2);
 						newLoc = mtx.transformPoint(pt);
-						params.x = objectTmx.x + newLoc.x;
-						params.y = objectTmx.y + newLoc.y;
+						params.x = objectTmx.x + newLoc.x + offset.x;
+						params.y = objectTmx.y + newLoc.y + offset.y;
 					}
 					
 					if (objectTmx.custom && objectTmx.custom["view"]) {
